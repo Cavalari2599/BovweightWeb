@@ -30,10 +30,6 @@
                 <button type="submit" :disabled="loading">
                     {{ loading ? 'Ingresando...' : 'Ingresar' }}
                 </button>
-
-                <div class="forgot-link">
-                    <RouterLink to="/forgot-password">¿Olvidaste tu contraseña?</RouterLink>
-                </div>
             </form>
         </div>
     </div>
@@ -148,6 +144,7 @@ button:disabled {
     font-size: 0.85rem;
     text-align: center;
 }
+<<<<<<< HEAD
 
 .forgot-link {
     text-align: center;
@@ -163,4 +160,6 @@ button:disabled {
 .forgot-link a:hover {
     text-decoration: underline;
 }
+=======
+>>>>>>> 601e5ddceeceba2beb40b4435a08c7e2a800d40a
 </style>

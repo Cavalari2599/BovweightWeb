@@ -2,8 +2,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
 import Login from '../views/Login.vue'
+<<<<<<< HEAD
 import ForgotPassword from '../views/ForgotPassword.vue'
 import ResetPassword from '../views/ResetPassword.vue'
+=======
+>>>>>>> 601e5ddceeceba2beb40b4435a08c7e2a800d40a
 import Dashboard from '../views/Dashboard.vue'
 import Usuarios from '../views/Usuarios.vue'
 import UsuarioForm from '../views/UsuarioForm.vue'
@@ -14,8 +17,6 @@ import Fincas from '../views/Fincas.vue'
 const routes = [
     { path: '/', redirect: '/login' },
     { path: '/login', name: 'Login', component: Login, meta: { guest: true } },
-    { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPassword, meta: { guest: true } },
-    { path: '/reset-password', name: 'ResetPassword', component: ResetPassword, meta: { guest: true } },
     {
         path: '/dashboard',
         component: Dashboard,
