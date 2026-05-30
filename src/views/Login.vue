@@ -1,3 +1,6 @@
+Aquí está con el link agregado:
+
+```vue
 <template>
     <div class="login-container">
         <div class="login-box">
@@ -30,6 +33,10 @@
                 <button type="submit" :disabled="loading">
                     {{ loading ? 'Ingresando...' : 'Ingresar' }}
                 </button>
+
+                <div class="link-container">
+                    <RouterLink to="/forgot-password">¿Olvidaste tu contraseña?</RouterLink>
+                </div>
             </form>
         </div>
     </div>
@@ -144,22 +151,20 @@ button:disabled {
     font-size: 0.85rem;
     text-align: center;
 }
-<<<<<<< HEAD
 
-.forgot-link {
+.link-container {
     text-align: center;
-    margin-top: 0.75rem;
+    margin-top: 1rem;
 }
 
-.forgot-link a {
+.link-container a {
     color: #2d6a4f;
     font-size: 0.85rem;
     text-decoration: none;
 }
 
-.forgot-link a:hover {
+.link-container a:hover {
     text-decoration: underline;
 }
-=======
->>>>>>> 601e5ddceeceba2beb40b4435a08c7e2a800d40a
 </style>
+```
