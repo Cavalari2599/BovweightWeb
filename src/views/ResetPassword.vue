@@ -1,27 +1,28 @@
-Aquí está con el link agregado:
-
-```vue
 <template>
     <div class="login-container">
         <div class="login-box">
             <h1>BovWeight CR</h1>
-            <h2>Iniciar Sesión</h2>
+            <h2>Restablecer Contraseña</h2>
 
-            <form @submit.prevent="handleLogin">
+            <p v-if="enlaceInvalido" class="error">
+                El enlace de recuperación es inválido o ha expirado.
+            </p>
+
+            <form v-else-if="!success" @submit.prevent="handleSubmit">
                 <div class="form-group">
-                    <label>Correo</label>
+                    <label>Nueva contraseña</label>
                     <input
-                        v-model="correo"
-                        type="email"
-                        placeholder="correo@ejemplo.com"
+                        v-model="clave"
+                        type="password"
+                        placeholder="••••••••"
                         required
                     />
                 </div>
 
                 <div class="form-group">
-                    <label>Contraseña</label>
+                    <label>Confirmar contraseña</label>
                     <input
-                        v-model="clave"
+                        v-model="clave_confirmation"
                         type="password"
                         placeholder="••••••••"
                         required
@@ -31,38 +32,56 @@ Aquí está con el link agregado:
                 <p v-if="error" class="error">{{ error }}</p>
 
                 <button type="submit" :disabled="loading">
-                    {{ loading ? 'Ingresando...' : 'Ingresar' }}
+                    {{ loading ? 'Restableciendo...' : 'Restablecer contraseña' }}
                 </button>
-
-                <div class="link-container">
-                    <RouterLink to="/forgot-password">¿Olvidaste tu contraseña?</RouterLink>
-                </div>
             </form>
+
+            <p v-else class="success">
+                Contraseña restablecida correctamente. Redirigiendo al login...
+            </p>
+
+            <div class="link-container">
+                <RouterLink to="/login">Volver al login</RouterLink>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { resetPassword } from '../services/auth'
 
+const route = useRoute()
 const router = useRouter()
-const auth = useAuthStore()
 
-const correo = ref('')
 const clave = ref('')
+const clave_confirmation = ref('')
 const error = ref('')
 const loading = ref(false)
+const success = ref(false)
+const enlaceInvalido = ref(false)
 
-async function handleLogin() {
+let token = ''
+let correo = ''
+
+onMounted(() => {
+    token = route.query.token || ''
+    correo = route.query.correo || ''
+    if (!token || !correo) {
+        enlaceInvalido.value = true
+    }
+})
+
+async function handleSubmit() {
     error.value = ''
     loading.value = true
     try {
-        await auth.login(correo.value, clave.value)
-        router.push('/dashboard')
+        await resetPassword(correo, token, clave.value, clave_confirmation.value)
+        success.value = true
+        setTimeout(() => router.push('/login'), 3000)
     } catch (e) {
-        error.value = e.response?.data?.message || 'Error al iniciar sesión.'
+        error.value = e.response?.data?.message || 'El token es inválido o ha expirado.'
     } finally {
         loading.value = false
     }
@@ -152,6 +171,13 @@ button:disabled {
     text-align: center;
 }
 
+.success {
+    color: #2d6a4f;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
 .link-container {
     text-align: center;
     margin-top: 1rem;
@@ -167,4 +193,3 @@ button:disabled {
     text-decoration: underline;
 }
 </style>
-```

@@ -1,13 +1,10 @@
-Aquí está con el link agregado:
-
-```vue
 <template>
     <div class="login-container">
         <div class="login-box">
             <h1>BovWeight CR</h1>
-            <h2>Iniciar Sesión</h2>
+            <h2>Recuperar Contraseña</h2>
 
-            <form @submit.prevent="handleLogin">
+            <form v-if="!success" @submit.prevent="handleSubmit">
                 <div class="form-group">
                     <label>Correo</label>
                     <input
@@ -18,51 +15,41 @@ Aquí está con el link agregado:
                     />
                 </div>
 
-                <div class="form-group">
-                    <label>Contraseña</label>
-                    <input
-                        v-model="clave"
-                        type="password"
-                        placeholder="••••••••"
-                        required
-                    />
-                </div>
-
                 <p v-if="error" class="error">{{ error }}</p>
 
                 <button type="submit" :disabled="loading">
-                    {{ loading ? 'Ingresando...' : 'Ingresar' }}
+                    {{ loading ? 'Enviando...' : 'Enviar enlace' }}
                 </button>
-
-                <div class="link-container">
-                    <RouterLink to="/forgot-password">¿Olvidaste tu contraseña?</RouterLink>
-                </div>
             </form>
+
+            <p v-if="success" class="success">
+                Se ha enviado un enlace de recuperación a tu correo.
+            </p>
+
+            <div class="link-container">
+                <RouterLink to="/login">Volver al login</RouterLink>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-
-const router = useRouter()
-const auth = useAuthStore()
+import { forgotPassword } from '../services/auth'
 
 const correo = ref('')
-const clave = ref('')
 const error = ref('')
 const loading = ref(false)
+const success = ref(false)
 
-async function handleLogin() {
+async function handleSubmit() {
     error.value = ''
     loading.value = true
     try {
-        await auth.login(correo.value, clave.value)
-        router.push('/dashboard')
+        await forgotPassword(correo.value)
+        success.value = true
     } catch (e) {
-        error.value = e.response?.data?.message || 'Error al iniciar sesión.'
+        error.value = e.response?.data?.message || 'No se encontró ninguna cuenta con ese correo.'
     } finally {
         loading.value = false
     }
@@ -152,6 +139,13 @@ button:disabled {
     text-align: center;
 }
 
+.success {
+    color: #2d6a4f;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
 .link-container {
     text-align: center;
     margin-top: 1rem;
@@ -167,4 +161,3 @@ button:disabled {
     text-decoration: underline;
 }
 </style>
-```
