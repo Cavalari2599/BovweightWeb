@@ -114,46 +114,64 @@
         <h2>Iniciar Sesión</h2>
       </div>
 
-      <form @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label>Correo</label>
-          <input v-model="correo" type="email" placeholder="correo@ejemplo.com" required />
-        </div>
+      <form @submit.prevent="handleLogin" novalidate>
+  <div class="form-group">
+    <label>Correo</label>
+    <input
+      v-model="correo"
+      type="email"
+      placeholder="correo@ejemplo.com"
+      @input="tocadoCorreo = true"
+      @blur="tocadoCorreo = true"
+    />
+    <div v-if="tocadoCorreo && errorCorreo" class="campo-error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ errorCorreo }}
+    </div>
+  </div>
 
-        <div class="form-group">
-          <label>Contraseña</label>
-          <div class="password-wrapper">
-            <input
-              v-model="clave"
-              :type="showPassword ? 'text' : 'password'"
-              placeholder="••••••••"
-              required
-              @focus="passwordFocused = true"
-              @blur="passwordFocused = false"
-            />
-            <button type="button" class="toggle-pw" @click="showPassword = !showPassword">
-              <svg v-if="!showPassword" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-              </svg>
-              <svg v-else width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                <line x1="1" y1="1" x2="23" y2="23"/>
-              </svg>
-            </button>
-          </div>
-        </div>
+  <div class="form-group">
+    <label>Contraseña</label>
+    <div class="password-wrapper">
+      <input
+        v-model="clave"
+        :type="showPassword ? 'text' : 'password'"
+        placeholder="••••••••"
+        @focus="passwordFocused = true"
+        @blur="passwordFocused = false; tocadoClave = true"
+        @input="tocadoClave = true"
+      />
+      <button type="button" class="toggle-pw" @click="showPassword = !showPassword">
+        <svg v-if="!showPassword" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+        <svg v-else width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+      </button>
+    </div>
+    <div v-if="tocadoClave && errorClave" class="campo-error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ errorClave }}
+    </div>
+  </div>
 
-        <p v-if="error" class="error">{{ error }}</p>
+  <p v-if="error" class="error">{{ error }}</p>
 
-        <button type="submit" :disabled="loading">
-          {{ loading ? 'Ingresando...' : 'Ingresar' }}
-        </button>
+  <button type="submit" :disabled="loading">
+    {{ loading ? 'Ingresando...' : 'Ingresar' }}
+  </button>
 
-        <div class="link-container">
-          <RouterLink to="/forgot-password">¿Olvidaste tu contraseña?</RouterLink>
-        </div>
-      </form>
+  <div class="link-container">
+    <RouterLink to="/forgot-password">¿Olvidaste tu contraseña?</RouterLink>
+  </div>
+</form>
     </div>
 
   </div>
@@ -175,6 +193,22 @@ const showPassword    = ref(false)
 const passwordFocused = ref(false)
 const screenWidth     = ref(window.innerWidth)
 
+const tocadoCorreo = ref(false)
+const tocadoClave  = ref(false)
+
+const errorCorreo = computed(() => {
+  const v = correo.value.trim()
+  if (!v) return 'El correo es requerido'
+  if (!v.includes('@')) return 'Debe incluir el símbolo @'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Formato inválido'
+  return ''
+})
+
+const errorClave = computed(() => {
+  if (!clave.value) return 'La contraseña es requerida'
+  return ''
+})
+
 // ── Vacas ──────────────────────────────────────────────
 const allCows = [
   { id: 0, left: '3%',  bottom: '75px', size: 95,  flip: false },
@@ -185,10 +219,9 @@ const allCows = [
 ]
 
 const cows = computed(() => {
-  if (screenWidth.value < 400) return [allCows[0], allCows[4]]
-  if (screenWidth.value < 550) return [allCows[0], allCows[3], allCows[4]]
-  if (screenWidth.value < 750) return [allCows[0], allCows[1], allCows[3], allCows[4]]
-  return allCows
+  if (screenWidth.value < 480)  return [allCows[0], allCows[4]]           // 2 vacas extremos
+  if (screenWidth.value < 768)  return [allCows[0], allCows[2], allCows[4]] // 3 vacas: extremos + centro
+  return allCows                                                             // 5 vacas desktop
 })
 
 const cowEls     = []
@@ -255,6 +288,10 @@ onUnmounted(() => {
 })
 
 async function handleLogin() {
+  tocadoCorreo.value = true
+  tocadoClave.value  = true
+  if (errorCorreo.value || errorClave.value) return
+
   error.value   = ''
   loading.value = true
   try {
@@ -519,15 +556,44 @@ button[type="submit"]:disabled {
 }
 .link-container a:hover { color: #ffffff; text-decoration: underline; }
 
+.campo-error {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: #ffe0e0;
+  font-weight: 500;
+  background: rgba(230, 57, 70, 0.2);
+  border: 1px solid rgba(230, 57, 70, 0.35);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  animation: fadeIn 0.2s ease;
+}
+.campo-error svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Responsive ── */
 @media (max-width: 750px) {
   .login-box { margin-bottom: 130px; }
 }
+
 @media (max-width: 550px) {
-  .login-box { padding: 2rem 1.4rem; margin-bottom: 120px; }
+  .login-box {
+    padding: 2rem 1.4rem;
+    margin-bottom: 120px;
+  }
   h1 { font-size: 1.6rem; }
   .sun { width: 60px; height: 60px; top: 30px; right: 80px; }
 }
+
 @media (max-width: 400px) {
   .login-box { margin-bottom: 110px; }
   .ground-flat { height: 90px; }

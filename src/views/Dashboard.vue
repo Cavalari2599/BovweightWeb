@@ -24,4 +24,11 @@ import Sidebar from '../components/Sidebar.vue'
   background-color: var(--color-bg);
   padding: 0;
 }
+
+@media (max-width: 1024px) {
+  .contenido {
+    margin-left: 0;
+    padding-top: 3.5rem; /* espacio para el botón hamburguesa */
+  }
+}
 </style>

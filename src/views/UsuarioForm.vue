@@ -102,8 +102,9 @@
                 <line x1="7" y1="9" x2="17" y2="9" />
                 <line x1="7" y1="13" x2="13" y2="13" />
               </svg>
-              <input v-model="form.identificacion_usuario" type="number" placeholder="Número de cédula"
-                :disabled="esEdicion" @input="marcarTocado('identificacion_usuario')"  @blur="marcarTocado('identificacion_usuario')" /> 
+              <input v-model="form.identificacion_usuario" type="text" inputmode="numeric" maxlength="12"
+                placeholder="Número de cédula" :disabled="esEdicion" @input="filtrarIdentificacion"
+                @blur="marcarTocado('identificacion_usuario')" />
             </div>
             <div v-if="errorVisible('identificacion_usuario')" class="campo-msg-error">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -427,6 +428,12 @@ function marcarTocado(campo) {
   tocado[campo] = true
 }
 
+function filtrarIdentificacion() {
+  // Solo dígitos: elimina letras (incluida la "e"), símbolos y espacios
+  form.value.identificacion_usuario = String(form.value.identificacion_usuario).replace(/\D/g, '')
+  marcarTocado('identificacion_usuario')
+}
+
 // ── Validaciones ──────────────────────────────────────
 // Usamos funciones normales en lugar de computed anidados
 // para evitar el problema de evaluación lazy
@@ -435,11 +442,12 @@ function validarCampo(campo) {
   switch (campo) {
 
     case 'identificacion_usuario': {
-      const v = String(form.value.identificacion_usuario ?? '').trim()
-      if (!v || v === '0') return 'La identificación es requerida'
-      if (v.length < 8 || v.length > 12) return 'Debe tener entre 8 y 12 dígitos'
-      return ''
-    }
+  const v = String(form.value.identificacion_usuario ?? '').trim()
+  if (!v || v === '0') return 'La identificación es requerida'
+  if (/\D/.test(v)) return 'Solo se permiten números'
+  if (v.length < 8 || v.length > 12) return 'Debe tener entre 8 y 12 dígitos'
+  return ''
+}
 
     case 'nombre_usuario': {
       const v = String(form.value.nombre_usuario ?? '')
@@ -462,15 +470,19 @@ function validarCampo(campo) {
     }
 
     case 'correo': {
-      const v = String(form.value.correo ?? '').trim()
-      if (!v) return 'El correo es requerido'
-      if (!v.includes('@')) return 'Debe incluir el símbolo @'
-      if (v.indexOf('@') === v.lastIndexOf('@') && !v.split('@')[1]?.includes('.'))
-        return 'Debe incluir un dominio válido (ej: .com)'
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))
-        return 'Formato inválido (ej: nombre@dominio.com)'
-      return ''
-    }
+  const v = String(form.value.correo ?? '').trim()
+  if (!v) return 'El correo es requerido'
+  if ((v.match(/@/g) || []).length > 1) return 'Solo debe tener un símbolo @'
+  if (!v.includes('@')) return 'Debe incluir el símbolo @ (ej: nombre@dominio.com)'
+
+  const [usuario, dominio] = v.split('@')
+  if (!usuario) return 'Falta el nombre antes del @'
+  if (!dominio || !dominio.includes('.')) return 'Falta el dominio (ej: .com)'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))
+    return 'Formato inválido (ej: nombre@dominio.com)'
+
+  return ''
+}
 
     case 'clave': {
   if (esEdicion.value && !form.value.clave) return ''
@@ -948,8 +960,15 @@ input:disabled {
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
-  .form-container { padding: 1.5rem 1rem; }
+  /* Más espacio arriba para que la vaca quepa sin cortarse */
+  .form-container { padding: 4.5rem 1rem 2.5rem; }
   .form-row { grid-template-columns: 1fr; }
-  .vaca-panel { display: none; }
+
+  /* La vaca AHORA se muestra en móvil, un poco más pequeña */
+  .vaca-panel {
+    width: 72px;
+    right: 14px;
+    bottom: 62px;
+  }
 }
 </style>

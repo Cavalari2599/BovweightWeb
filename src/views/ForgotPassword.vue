@@ -102,23 +102,30 @@
         <h2>Recuperar Contraseña</h2>
       </div>
 
-      <form v-if="!success" @submit.prevent="handleSubmit">
-        <div class="form-group">
-          <label>Correo</label>
-          <input
-            v-model="correo"
-            type="email"
-            placeholder="correo@ejemplo.com"
-            required
-          />
-        </div>
+      <form v-if="!success" @submit.prevent="handleSubmit" novalidate>
+  <div class="form-group">
+    <label>Correo</label>
+    <input
+      v-model="correo"
+      type="email"
+      placeholder="correo@ejemplo.com"
+      @input="tocado = true"
+      @blur="tocado = true"
+    />
+    <div v-if="tocado && errorCorreo" class="campo-error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ errorCorreo }}
+    </div>
+  </div>
 
-        <p v-if="error" class="error">{{ error }}</p>
+  <p v-if="error" class="error">{{ error }}</p>
 
-        <button type="submit" :disabled="loading">
-          {{ loading ? 'Enviando...' : 'Enviar enlace' }}
-        </button>
-      </form>
+  <button type="submit" :disabled="loading">
+    {{ loading ? 'Enviando...' : 'Enviar enlace' }}
+  </button>
+</form>
 
       <div v-if="success" class="success-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -149,6 +156,17 @@ const correo  = ref('')
 const error   = ref('')
 const loading = ref(false)
 const success = ref(false)
+
+const tocado = ref(false)
+
+const errorCorreo = computed(() => {
+  const v = correo.value.trim()
+  if (!v) return 'El correo es requerido'
+  if (!v.includes('@')) return 'Debe incluir el símbolo @'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Formato inválido (ej: nombre@dominio.com)'
+  return ''
+})
+
 const screenWidth = ref(window.innerWidth)
 
 // ── Vacas ──────────────────────────────────────────────
@@ -161,9 +179,8 @@ const allCows = [
 ]
 
 const cows = computed(() => {
-  if (screenWidth.value < 400) return [allCows[0], allCows[4]]
-  if (screenWidth.value < 550) return [allCows[0], allCows[3], allCows[4]]
-  if (screenWidth.value < 750) return [allCows[0], allCows[1], allCows[3], allCows[4]]
+  if (screenWidth.value < 480)  return [allCows[0], allCows[4]]
+  if (screenWidth.value < 768)  return [allCows[0], allCows[2], allCows[4]]
   return allCows
 })
 
@@ -208,6 +225,9 @@ onUnmounted(() => {
 
 // ── Submit ─────────────────────────────────────────────
 async function handleSubmit() {
+   tocado.value = true
+  if (errorCorreo.value) return 
+
   error.value   = ''
   loading.value = true
   try {
@@ -452,6 +472,30 @@ button[type="submit"]:disabled {
   height: 14px;
 }
 .link-container a:hover { color: #ffffff; text-decoration: underline; }
+
+.campo-error {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: #ffe0e0;
+  font-weight: 500;
+  background: rgba(230, 57, 70, 0.2);
+  border: 1px solid rgba(230, 57, 70, 0.35);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  animation: fadeIn 0.2s ease;
+}
+.campo-error svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* ── Responsive ── */
 @media (max-width: 750px) { .login-box { margin-bottom: 130px; } }

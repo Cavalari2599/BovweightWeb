@@ -556,13 +556,40 @@ tbody tr:last-child td { border-bottom: none; }
 .sin-resultados span { font-size: 0.82rem; }
 
 /* ── Responsive ── */
-@media (max-width: 768px) {
-  .historial { padding: 1.2rem; }
+
+/* Tablet y móvil: ocultar columna "#" y mostrar la vaca */
+@media (max-width: 1024px) {
+  .fincas { padding: 1.5rem 1.2rem; }
   .header { flex-direction: column; align-items: flex-start; }
   .header__acciones { width: 100%; }
   .buscador input { width: 100%; }
-  .tabla-container { overflow-x: auto; }
-  .vaca-header { display: none; }
+
+  .tabla-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 64px;            /* espacio para que la vaca no se corte */
+  }
+
+  /* Ocultar columna "#" (sin afectar el mensaje "sin resultados") */
+  th:nth-child(1),
+  td:nth-child(1):not(.sin-resultados) { display: none; }
+
+  /* La vaca AHORA se muestra, reubicada en la esquina superior derecha */
+  .vaca-header {
+    display: block;
+    top: -56px;
+    right: 16px;
+    width: 74px;
+  }
+  /* Los signos los dejamos ocultos para no amontonar */
   .signos-pregunta { display: none; }
+}
+
+/* Solo móvil: además ocultar "Correo" para que no se vea apretado */
+@media (max-width: 600px) {
+  .fincas { padding: 1.2rem 0.9rem; }
+
+  th:nth-child(5),
+  td:nth-child(5) { display: none; }
 }
 </style>

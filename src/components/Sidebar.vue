@@ -1,5 +1,15 @@
 <template>
-  <div class="sidebar">
+  <!-- Botón hamburguesa — solo móvil/tablet -->
+  <button class="hamburger" @click="menuAbierto = !menuAbierto" :class="{ 'hamburger--open': menuAbierto }">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Overlay oscuro al abrir en móvil -->
+  <div class="sidebar-overlay" :class="{ 'sidebar-overlay--visible': menuAbierto }" @click="menuAbierto = false"></div>
+
+  <div class="sidebar" :class="{ 'sidebar--open': menuAbierto }">
 
     <!-- Header con imagen -->
     <div class="sidebar-header">
@@ -15,7 +25,7 @@
 
     <!-- Nav -->
     <nav>
-      <router-link to="/dashboard" class="nav-item">
+      <router-link to="/dashboard" class="nav-item" @click="menuAbierto = false">
         <span class="nav-icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="7" height="7" rx="1"/>
@@ -33,7 +43,7 @@
         </svg>
       </router-link>
 
-      <router-link to="/usuarios" class="nav-item">
+      <router-link to="/usuarios" class="nav-item" @click="menuAbierto = false">
         <span class="nav-icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="7" r="3"/>
@@ -51,7 +61,7 @@
         </svg>
       </router-link>
 
-      <router-link to="/fincas" class="nav-item">
+      <router-link to="/fincas" class="nav-item" @click="menuAbierto = false">
         <span class="nav-icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -67,7 +77,7 @@
         </svg>
       </router-link>
 
-      <router-link to="/historial" class="nav-item">
+      <router-link to="/historial" class="nav-item" @click="menuAbierto = false">
         <span class="nav-icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="9"/>
@@ -86,44 +96,43 @@
       </router-link>
     </nav>
 
-
-      <!-- Usuario expandible -->
-      <div class="usuario-card" @click="expandido = !expandido">
-        <div class="avatar-inicial">
-          {{ auth.usuario?.nombre?.charAt(0).toUpperCase() }}
-        </div>
-        <div class="usuario-texto">
-          <p class="nombre">{{ auth.usuario?.nombre }} {{ auth.usuario?.apellido1_usuario }}</p>
-          <p class="rol">Técnico</p>
-        </div>
-        <svg
-          class="expand-arrow"
-          :class="{ 'expand-arrow--open': expandido }"
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        >
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
+    <!-- Usuario expandible -->
+    <div class="usuario-card" @click="expandido = !expandido">
+      <div class="avatar-inicial">
+        {{ auth.usuario?.nombre?.charAt(0).toUpperCase() }}
       </div>
-
-      <!-- Detalle expandido -->
-      <div class="usuario-detalle" :class="{ 'usuario-detalle--visible': expandido }">
-        <div class="detalle-row">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
-          <span>{{ auth.usuario?.correo }}</span>
-        </div>
+      <div class="usuario-texto">
+        <p class="nombre">{{ auth.usuario?.nombre }} {{ auth.usuario?.apellido1_usuario }}</p>
+        <p class="rol">Técnico</p>
       </div>
+      <svg
+        class="expand-arrow"
+        :class="{ 'expand-arrow--open': expandido }"
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
 
-      <button class="btn-logout" @click="handleLogout">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
+    <!-- Detalle expandido -->
+    <div class="usuario-detalle" :class="{ 'usuario-detalle--visible': expandido }">
+      <div class="detalle-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
         </svg>
-        Cerrar sesión
-      </button>
+        <span>{{ auth.usuario?.correo }}</span>
+      </div>
+    </div>
+
+    <button class="btn-logout" @click="handleLogout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Cerrar sesión
+    </button>
 
   </div>
 </template>
@@ -133,9 +142,10 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
-const router   = useRouter()
-const auth     = useAuthStore()
-const expandido = ref(false)
+const router    = useRouter()
+const auth      = useAuthStore()
+const expandido  = ref(false)
+const menuAbierto = ref(false)
 
 async function handleLogout() {
   await auth.logout()
@@ -144,6 +154,57 @@ async function handleLogout() {
 </script>
 
 <style scoped>
+/* ── Hamburguesa — solo móvil/tablet ── */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 200;
+  background: var(--color-primary-dark);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: background 0.2s;
+}
+.hamburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: white;
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+/* Animación a X al abrir */
+.hamburger--open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger--open span:nth-child(2) { opacity: 0; }
+.hamburger--open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Overlay ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 98;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.sidebar-overlay--visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Sidebar ── */
 .sidebar {
   width: 265px;
   min-height: 100vh;
@@ -155,6 +216,8 @@ async function handleLogout() {
   top: 0;
   left: 0;
   overflow: hidden;
+  z-index: 99;
+  transition: transform 0.3s ease;
 }
 
 /* ── Header con imagen ── */
@@ -180,11 +243,10 @@ async function handleLogout() {
   position: relative;
   z-index: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 0.65rem;
   padding: 1.2rem 1.2rem 0.8rem;
   height: 100%;
-  align-items: flex-end;
 }
 .logo-cow {
   width: 36px;
@@ -234,7 +296,6 @@ nav {
   transition: background 0.2s, color 0.2s, border-color 0.2s;
   position: relative;
 }
-
 .nav-icon-wrap {
   width: 36px;
   height: 36px;
@@ -246,12 +307,7 @@ nav {
   justify-content: center;
   transition: background 0.2s, transform 0.25s ease;
 }
-.nav-icon-wrap svg {
-  width: 17px;
-  height: 17px;
-  transition: transform 0.25s ease;
-}
-
+.nav-icon-wrap svg { width: 17px; height: 17px; }
 .nav-texto {
   flex: 1;
   display: flex;
@@ -274,7 +330,6 @@ nav {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .nav-arrow {
   width: 14px;
   height: 14px;
@@ -283,7 +338,6 @@ nav {
   transition: opacity 0.2s, transform 0.2s;
 }
 
-/* Hover */
 .nav-item:hover {
   background: rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.95);
@@ -292,18 +346,10 @@ nav {
   background: rgba(255,255,255,0.14);
   transform: scale(1.08);
 }
-.nav-item:hover .nav-label {
-  transform: translateX(2px);
-}
-.nav-item:hover .nav-arrow {
-  opacity: 0.8;
-  transform: translateX(2px);
-}
-.nav-item:hover .nav-desc {
-  color: rgba(255,255,255,0.55);
-}
+.nav-item:hover .nav-label { transform: translateX(2px); }
+.nav-item:hover .nav-arrow { opacity: 0.8; transform: translateX(2px); }
+.nav-item:hover .nav-desc { color: rgba(255,255,255,0.55); }
 
-/* Activo */
 .nav-item.router-link-active {
   background: rgba(255,255,255,0.13);
   color: #ffffff;
@@ -313,32 +359,16 @@ nav {
   background: var(--color-primary);
   animation: icon-glow 2.5s ease-in-out infinite;
 }
-.nav-item.router-link-active .nav-label {
-  font-weight: 700;
-}
-.nav-item.router-link-active .nav-desc {
-  color: rgba(255,255,255,0.6);
-}
-.nav-item.router-link-active .nav-arrow {
-  opacity: 1;
-  color: var(--color-primary-light);
-}
+.nav-item.router-link-active .nav-label { font-weight: 700; }
+.nav-item.router-link-active .nav-desc { color: rgba(255,255,255,0.6); }
+.nav-item.router-link-active .nav-arrow { opacity: 1; color: var(--color-primary-light); }
+
 @keyframes icon-glow {
   0%, 100% { box-shadow: 0 0 0px rgba(82,183,136,0); }
   50%       { box-shadow: 0 0 8px rgba(82,183,136,0.5); }
 }
 
-/* ── Footer ── */
-.sidebar-footer {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  position: relative;
-}
-
-
-/* Contenido footer */
+/* ── Usuario ── */
 .usuario-card {
   display: flex;
   align-items: center;
@@ -349,9 +379,7 @@ nav {
   margin: 0 0.5rem;
   transition: background 0.2s;
 }
-.usuario-card:hover {
-  background: rgba(255,255,255,0.06);
-}
+.usuario-card:hover { background: rgba(255,255,255,0.06); }
 
 .avatar-inicial {
   width: 34px !important;
@@ -390,7 +418,6 @@ nav {
   color: rgba(255,255,255,0.5);
   font-family: var(--font-ui);
 }
-
 .expand-arrow {
   width: 15px;
   height: 15px;
@@ -398,11 +425,8 @@ nav {
   flex-shrink: 0;
   transition: transform 0.3s ease;
 }
-.expand-arrow--open {
-  transform: rotate(180deg);
-}
+.expand-arrow--open { transform: rotate(180deg); }
 
-/* Detalle expandido */
 .usuario-detalle {
   max-height: 0;
   overflow: hidden;
@@ -410,10 +434,7 @@ nav {
   opacity: 0;
   margin: 0 0.5rem;
 }
-.usuario-detalle--visible {
-  max-height: 80px;
-  opacity: 1;
-}
+.usuario-detalle--visible { max-height: 80px; opacity: 1; }
 .detalle-row {
   display: flex;
   align-items: center;
@@ -422,12 +443,7 @@ nav {
   background: rgba(255,255,255,0.06);
   border-radius: var(--radius-sm);
 }
-.detalle-row svg {
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
-  color: var(--color-primary-light);
-}
+.detalle-row svg { width: 13px; height: 13px; flex-shrink: 0; color: var(--color-primary-light); }
 .detalle-row span {
   font-size: 0.72rem;
   color: rgba(255,255,255,0.65);
@@ -437,7 +453,6 @@ nav {
   text-overflow: ellipsis;
 }
 
-/* Botón cerrar sesión */
 .btn-logout {
   width: calc(100% - 1rem);
   margin: 0 0.5rem 0.75rem;
@@ -456,18 +471,20 @@ nav {
   gap: 0.5rem;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
-.btn-logout svg {
-  width: 15px;
-  height: 15px;
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
-}
-.btn-logout:hover {
-  background: rgba(230,57,70,0.15);
-  border-color: rgba(230,57,70,0.5);
-  color: #ff8a8a;
-}
-.btn-logout:hover svg {
-  transform: translateX(3px);
+.btn-logout svg { width: 15px; height: 15px; flex-shrink: 0; transition: transform 0.2s ease; }
+.btn-logout:hover { background: rgba(230,57,70,0.15); border-color: rgba(230,57,70,0.5); color: #ff8a8a; }
+.btn-logout:hover svg { transform: translateX(3px); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .hamburger { display: flex; }
+  .sidebar-overlay { display: block; }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar--open {
+    transform: translateX(0);
+  }
 }
 </style>

@@ -113,61 +113,79 @@
         El enlace de recuperación es inválido o ha expirado.
       </p>
 
-      <form v-else-if="!success" @submit.prevent="handleSubmit">
-        <div class="form-group">
-          <label>Nueva contraseña</label>
-          <div class="password-wrapper">
-            <input
-              v-model="clave"
-              :type="showClave ? 'text' : 'password'"
-              placeholder="••••••••"
-              required
-              @focus="passwordFocused = true"
-              @blur="passwordFocused = false"
-            />
-            <button type="button" class="toggle-pw" @click="showClave = !showClave">
-              <svg v-if="!showClave" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-              </svg>
-              <svg v-else width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                <line x1="1" y1="1" x2="23" y2="23"/>
-              </svg>
-            </button>
-          </div>
-        </div>
+      <form v-else-if="!success" @submit.prevent="handleSubmit" novalidate>
+  <div class="form-group">
+    <label>Nueva contraseña</label>
+    <div class="password-wrapper">
+      <input
+        v-model="clave"
+        :type="showClave ? 'text' : 'password'"
+        placeholder="••••••••"
+        @focus="passwordFocused = true"
+        @blur="passwordFocused = false; tocadoClave = true"
+        @input="tocadoClave = true"
+      />
+      <button type="button" class="toggle-pw" @click="showClave = !showClave">
+        <svg v-if="!showClave" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+        <svg v-else width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+      </button>
+    </div>
+    <div v-if="tocadoClave && errorClave" class="campo-error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ errorClave }}
+    </div>
+  </div>
 
-        <div class="form-group">
-          <label>Confirmar contraseña</label>
-          <div class="password-wrapper">
-            <input
-              v-model="clave_confirmation"
-              :type="showConfirmar ? 'text' : 'password'"
-              placeholder="••••••••"
-              required
-              @focus="passwordFocused = true"
-              @blur="passwordFocused = false"
-            />
-            <button type="button" class="toggle-pw" @click="showConfirmar = !showConfirmar">
-              <svg v-if="!showConfirmar" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-              </svg>
-              <svg v-else width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                <line x1="1" y1="1" x2="23" y2="23"/>
-              </svg>
-            </button>
-          </div>
-        </div>
+  <div class="form-group">
+    <label>Confirmar contraseña</label>
+    <div class="password-wrapper">
+      <input
+        v-model="clave_confirmation"
+        :type="showConfirmar ? 'text' : 'password'"
+        placeholder="••••••••"
+        @focus="passwordFocused = true"
+        @blur="passwordFocused = false; tocadoConfirmacion = true"
+        @input="tocadoConfirmacion = true"
+      />
+      <button type="button" class="toggle-pw" @click="showConfirmar = !showConfirmar">
+        <svg v-if="!showConfirmar" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+        <svg v-else width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+      </button>
+    </div>
+    <div v-if="tocadoConfirmacion && errorConfirmacion" class="campo-error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ errorConfirmacion }}
+    </div>
+    <div v-if="clave_confirmation && clave && !errorConfirmacion" class="campo-exito">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      Las contraseñas coinciden
+    </div>
+  </div>
 
-        <p v-if="error" class="error">{{ error }}</p>
+  <p v-if="error" class="error">{{ error }}</p>
 
-        <button type="submit" :disabled="loading">
-          {{ loading ? 'Restableciendo...' : 'Restablecer contraseña' }}
-        </button>
-      </form>
+  <button type="submit" :disabled="loading">
+    {{ loading ? 'Restableciendo...' : 'Restablecer contraseña' }}
+  </button>
+</form>
 
       <div v-else class="success-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -209,6 +227,21 @@ const showConfirmar     = ref(false)
 const passwordFocused   = ref(false)
 const screenWidth       = ref(window.innerWidth)
 
+const tocadoClave        = ref(false)
+const tocadoConfirmacion = ref(false)
+
+const errorClave = computed(() => {
+  if (!clave.value) return 'La contraseña es requerida'
+  if (clave.value.length < 8) return 'Mínimo 8 caracteres'
+  return ''
+})
+
+const errorConfirmacion = computed(() => {
+  if (!clave_confirmation.value) return 'Confirma la contraseña'
+  if (clave_confirmation.value !== clave.value) return 'Las contraseñas no coinciden'
+  return ''
+})
+
 let token  = ''
 let correo = ''
 
@@ -233,9 +266,8 @@ const allCows = [
   { id: 4, left: '78%', bottom: '75px', size: 88,  flip: false },
 ]
 const cows = computed(() => {
-  if (screenWidth.value < 400) return [allCows[0], allCows[4]]
-  if (screenWidth.value < 550) return [allCows[0], allCows[3], allCows[4]]
-  if (screenWidth.value < 750) return [allCows[0], allCows[1], allCows[3], allCows[4]]
+  if (screenWidth.value < 480) return [allCows[0], allCows[4]]
+  if (screenWidth.value < 768) return [allCows[0], allCows[2], allCows[4]]
   return allCows
 })
 const cowEls     = []
@@ -283,6 +315,10 @@ function onResize() {
 }
 
 async function handleSubmit() {
+  tocadoClave.value        = true
+  tocadoConfirmacion.value = true
+  if (errorClave.value || errorConfirmacion.value) return
+
   error.value   = ''
   loading.value = true
   try {
@@ -553,6 +589,49 @@ button[type="submit"]:disabled {
 }
 .link-container a svg { width: 14px; height: 14px; }
 .link-container a:hover { color: #ffffff; text-decoration: underline; }
+
+.campo-error {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: #ffe0e0;
+  font-weight: 500;
+  background: rgba(230, 57, 70, 0.2);
+  border: 1px solid rgba(230, 57, 70, 0.35);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  animation: fadeIn 0.2s ease;
+}
+.campo-error svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+.campo-exito {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: #b7e4c7;
+  font-weight: 500;
+  background: rgba(45, 106, 79, 0.2);
+  border: 1px solid rgba(45, 106, 79, 0.35);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  animation: fadeIn 0.2s ease;
+}
+.campo-exito svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* ── Responsive ── */
 @media (max-width: 750px) { .login-box { margin-bottom: 130px; } }

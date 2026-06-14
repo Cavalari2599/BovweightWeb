@@ -10,22 +10,19 @@
       <div class="header__acciones">
         <!-- Buscador -->
         <div class="buscador">
-          <svg class="buscador__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <svg class="buscador__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          <input
-            v-model="buscar"
-            type="text"
-            placeholder="Buscar usuario..."
-            @input="buscarUsuarios"
-          />
+          <input v-model="buscar" type="text" placeholder="Buscar usuario..." @input="buscarUsuarios" />
         </div>
         <!-- Botón nuevo -->
         <button class="btn-crear" @click="irACrear">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
           Nuevo Usuario
         </button>
@@ -53,9 +50,10 @@
             <td class="td-nombre">
               <!-- Ícono persona -->
               <div class="avatar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="8" r="4"/>
-                  <path d="M4 20v-1a8 8 0 0 1 16 0v1"/>
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20v-1a8 8 0 0 1 16 0v1" />
                 </svg>
               </div>
               <span>{{ usuario.nombre_usuario }} {{ usuario.apellido1_usuario }} {{ usuario.apellido2_usuario }}</span>
@@ -69,10 +67,7 @@
 
             <td class="td-estado">
               <div class="estado-wrap">
-                <span
-                  class="estado-dot"
-                  :class="usuario.estado ? 'dot-activo' : 'dot-inactivo'"
-                ></span>
+                <span class="estado-dot" :class="usuario.estado ? 'dot-activo' : 'dot-inactivo'"></span>
                 <span :class="usuario.estado ? 'estado-activo' : 'estado-inactivo'">
                   {{ usuario.estado ? 'Activo' : 'Inactivo' }}
                 </span>
@@ -81,31 +76,29 @@
 
             <td class="td-acciones">
               <!-- Editar -->
-              <button class="btn-accion btn-editar" @click="irAEditar(usuario.identificacion_usuario)" title="Editar usuario">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              <button class="btn-accion btn-editar" @click="irAEditar(usuario.identificacion_usuario)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
-                Editar
+                <span>Editar</span>
               </button>
+
               <!-- Activar/Desactivar -->
-              <button
-                class="btn-accion"
-                :class="usuario.estado ? 'btn-desactivar' : 'btn-activar'"
-                @click="cambiarEstado(usuario)"
-                :title="usuario.estado ? 'Desactivar usuario' : 'Activar usuario'"
-              >
-                <!-- Ícono desactivar -->
-                <svg v-if="usuario.estado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+              <button class="btn-accion" :class="usuario.estado ? 'btn-desactivar' : 'btn-activar'"
+                @click="cambiarEstado(usuario)" :title="usuario.estado ? 'Desactivar usuario' : 'Activar usuario'">
+                <svg v-if="usuario.estado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
                 </svg>
-                <!-- Ícono activar -->
-                <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                  <polyline points="22 4 12 14.01 9 11.01"/>
+                <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
-                {{ usuario.estado ? 'Desactivar' : 'Activar' }}
+                <span>{{ usuario.estado ? 'Desactivar' : 'Activar' }}</span>
               </button>
             </td>
 
@@ -263,7 +256,8 @@ onMounted(cargarUsuarios)
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border);
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 table {
   width: 100%;
@@ -288,6 +282,7 @@ td {
   color: var(--color-text);
   font-family: var(--font-ui);
   border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
 }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr {
@@ -301,18 +296,27 @@ tbody tr:hover { background: var(--color-bg); }
   font-size: 0.82rem;
   font-family: var(--font-ui);
 }
+
+/* Nombre: celda normal (table-cell) para que las líneas queden rectas.
+   La alineación ícono + texto se resuelve con inline-flex/vertical-align. */
 .td-nombre {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
   font-weight: 500;
+  white-space: normal;
+}
+.td-nombre .avatar {
+  vertical-align: middle;
+  margin-right: 0.6rem;
+}
+.td-nombre > span {
+  display: inline-block;
+  vertical-align: middle;
 }
 .avatar {
   width: 32px;
   height: 32px;
   background: var(--color-primary-pale);
   border-radius: 50%;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 6px;
@@ -373,15 +377,16 @@ tbody tr:hover { background: var(--color-bg); }
 .estado-inactivo { color: var(--color-text); font-size: 0.82rem; }
 
 /* ── Botones acciones ── */
+/* La celda queda como table-cell (no flex) para no romper las líneas.
+   Los botones van inline-flex y se separan con margin. */
 .td-acciones {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
+  white-space: nowrap;
 }
 .btn-accion {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  vertical-align: middle;
   padding: 0.38rem 0.8rem;
   border: none;
   border-radius: var(--radius-sm);
@@ -391,6 +396,9 @@ tbody tr:hover { background: var(--color-bg); }
   font-family: var(--font-ui);
   transition: opacity 0.2s, transform 0.1s;
   white-space: nowrap;
+}
+.btn-accion + .btn-accion {
+  margin-left: 0.5rem;
 }
 .btn-accion svg { width: 13px; height: 13px; flex-shrink: 0; }
 .btn-accion:hover { opacity: 0.85; transform: translateY(-1px); }
@@ -422,12 +430,49 @@ tbody tr:hover { background: var(--color-bg); }
 }
 .sin-resultados p { margin: 0; font-size: 0.9rem; }
 
-/* ── Responsive ── */
-@media (max-width: 768px) {
-  .usuarios { padding: 1.2rem; }
+/* ── Responsive: TABLET (≤1024px) ── */
+@media (max-width: 1024px) {
+  .usuarios { padding: 1.5rem 1.2rem; }
+
+  /* Header en columna */
   .header { flex-direction: column; align-items: flex-start; }
-  .header__acciones { width: 100%; }
+  .header__acciones {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+  .buscador { width: 100%; }
   .buscador input { width: 100%; }
-  .tabla-container { overflow-x: auto; }
+  .btn-crear { width: 100%; justify-content: center; }
+
+  /* Ocultar SOLO la columna Identificación (móvil + tablet) */
+  th:nth-child(1),
+  td:nth-child(1) { display: none; }
+
+  /* Celdas más compactas; los botones siguen uno al lado del otro CON texto */
+  td, th { padding: 0.7rem 0.6rem; }
+  .td-nombre .avatar { margin-right: 0.4rem; }
+  .avatar { width: 28px; height: 28px; padding: 5px; }
+}
+
+/* ── Responsive: MÓVIL (≤480px) ── */
+@media (max-width: 480px) {
+  .usuarios { padding: 1rem 0.8rem; }
+  .header__titulo h2 { font-size: 1.3rem; }
+  .header__cow { width: 30px; height: 30px; }
+
+  /* Botones en columna (uno debajo del otro) conservando el texto */
+  .td-acciones { white-space: normal; }
+  .btn-accion {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-left: 0;
+  }
+  .btn-accion + .btn-accion {
+    margin-left: 0;
+    margin-top: 0.4rem;
+  }
 }
 </style>
