@@ -53,17 +53,26 @@
           <ellipse cx="26" cy="20" rx="4" ry="2.5" fill="#ffcdd2" stroke="#333" stroke-width="0.3" transform="rotate(30 26 20)" />
           <path d="M 10 18 Q 8 12 10 10" fill="none" stroke="#f5f5dc" stroke-width="2" stroke-linecap="round" />
           <path d="M 22 18 Q 24 12 22 10" fill="none" stroke="#f5f5dc" stroke-width="2" stroke-linecap="round" />
-          <!-- Ojos siempre abiertos -->
+
           <circle cx="11" cy="26" r="3" fill="white" stroke="#333" stroke-width="0.3" />
           <circle cx="21" cy="26" r="3" fill="white" stroke="#333" stroke-width="0.3" />
-          <circle cx="11" cy="26" r="1.5" fill="#1a1a1a"
-            :style="{ transform: `translate(${eyeOffsets[cow.id].x}px, ${eyeOffsets[cow.id].y}px)`, transition: 'transform 0.08s ease-out' }" />
-          <circle cx="21" cy="26" r="1.5" fill="#1a1a1a"
-            :style="{ transform: `translate(${eyeOffsets[cow.id].x}px, ${eyeOffsets[cow.id].y}px)`, transition: 'transform 0.08s ease-out' }" />
-          <circle cx="10" cy="25" r="0.6" fill="white"
-            :style="{ transform: `translate(${eyeOffsets[cow.id].x * 0.5}px, ${eyeOffsets[cow.id].y * 0.5}px)` }" />
-          <circle cx="20" cy="25" r="0.6" fill="white"
-            :style="{ transform: `translate(${eyeOffsets[cow.id].x * 0.5}px, ${eyeOffsets[cow.id].y * 0.5}px)` }" />
+
+          <template v-if="!campoActivo">
+            <circle cx="11" cy="26" r="1.5" fill="#1a1a1a"
+              :style="{ transform: `translate(${eyeOffsets[cow.id].x}px, ${eyeOffsets[cow.id].y}px)`, transition: 'transform 0.08s ease-out' }" />
+            <circle cx="21" cy="26" r="1.5" fill="#1a1a1a"
+              :style="{ transform: `translate(${eyeOffsets[cow.id].x}px, ${eyeOffsets[cow.id].y}px)`, transition: 'transform 0.08s ease-out' }" />
+            <circle cx="10" cy="25" r="0.6" fill="white"
+              :style="{ transform: `translate(${eyeOffsets[cow.id].x * 0.5}px, ${eyeOffsets[cow.id].y * 0.5}px)` }" />
+            <circle cx="20" cy="25" r="0.6" fill="white"
+              :style="{ transform: `translate(${eyeOffsets[cow.id].x * 0.5}px, ${eyeOffsets[cow.id].y * 0.5}px)` }" />
+          </template>
+
+          <template v-else>
+            <line x1="8.5" y1="26" x2="13.5" y2="26" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
+            <line x1="18.5" y1="26" x2="23.5" y2="26" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
+          </template>
+
           <ellipse cx="16" cy="34" rx="6" ry="4" fill="#ffcdd2" stroke="#333" stroke-width="0.3" />
           <circle cx="14" cy="34" r="1" fill="#333" />
           <circle cx="18" cy="34" r="1" fill="#333" />
@@ -99,42 +108,80 @@
     <div class="login-box">
       <div class="login-box__header">
         <h1>BovWeight CR</h1>
-        <h2>Recuperar Contraseña</h2>
+        <h2>{{ paso === 1 ? 'Recuperar Contraseña' : 'Verificar Código' }}</h2>
       </div>
 
-      <form v-if="!success" @submit.prevent="handleSubmit">
+      <form v-if="paso === 1 && !success" @submit.prevent="handleEnviarCodigo">
         <div class="form-group">
           <label>Correo</label>
+          <input v-model="correo" type="email" placeholder="correo@ejemplo.com" required />
+        </div>
+
+        <p v-if="error" class="error">{{ error }}</p>
+
+        <button type="submit" :disabled="loading">
+          {{ loading ? 'Enviando...' : 'Enviar código' }}
+        </button>
+
+        <div class="link-container">
+          <RouterLink to="/login">Volver al login</RouterLink>
+        </div>
+      </form>
+
+      <form v-else-if="paso === 2 && !success" @submit.prevent="handleCambiarContrasena">
+        <div class="form-group">
+          <label>Código de verificación</label>
           <input
-            v-model="correo"
-            type="email"
-            placeholder="correo@ejemplo.com"
+            v-model="codigo"
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            placeholder="000000"
             required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Nueva contraseña</label>
+          <input
+            v-model="clave"
+            type="password"
+            placeholder="••••••••"
+            required
+            @focus="campoActivo = true"
+            @blur="campoActivo = false"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Confirmar contraseña</label>
+          <input
+            v-model="clave_confirmation"
+            type="password"
+            placeholder="••••••••"
+            required
+            @focus="campoActivo = true"
+            @blur="campoActivo = false"
           />
         </div>
 
         <p v-if="error" class="error">{{ error }}</p>
 
         <button type="submit" :disabled="loading">
-          {{ loading ? 'Enviando...' : 'Enviar enlace' }}
+          {{ loading ? 'Cambiando...' : 'Cambiar contraseña' }}
         </button>
+
+        <div class="link-container">
+          <a href="#" @click.prevent="volverPaso1">¿No recibiste el código?</a>
+        </div>
       </form>
 
-      <div v-if="success" class="success-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-          <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-        <p>Se ha enviado un enlace de recuperación a tu correo.</p>
-      </div>
+      <p v-if="success" class="success">
+        Tu contraseña ha sido restablecida.
+      </p>
 
-      <div class="link-container">
-        <RouterLink to="/login">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
-          Volver al login
-        </RouterLink>
+      <div v-if="success" class="link-container">
+        <RouterLink to="/login">Volver al login</RouterLink>
       </div>
     </div>
 
@@ -142,16 +189,20 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
-import { forgotPassword } from '../services/auth'
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
+import { forgotPassword, resetPassword } from '../services/auth'
 
-const correo  = ref('')
-const error   = ref('')
+const paso = ref(1)
+const correo = ref('')
+const codigo = ref('')
+const clave = ref('')
+const clave_confirmation = ref('')
+const error = ref('')
 const loading = ref(false)
 const success = ref(false)
+const campoActivo = ref(false)
 const screenWidth = ref(window.innerWidth)
 
-// ── Vacas ──────────────────────────────────────────────
 const allCows = [
   { id: 0, left: '3%',  bottom: '75px', size: 95,  flip: false },
   { id: 1, left: '18%', bottom: '75px', size: 115, flip: true  },
@@ -171,21 +222,43 @@ const cowEls     = []
 const eyeOffsets = reactive(allCows.map(() => ({ x: 0, y: 0 })))
 const headAngles = reactive(allCows.map(() => 0))
 
+watch(campoActivo, (focused) => {
+  if (!focused) {
+    allCows.forEach((cow) => {
+      eyeOffsets[cow.id].x = 0
+      eyeOffsets[cow.id].y = 0
+      headAngles[cow.id]   = 0
+    })
+  }
+})
+
 function handleMouseMove(e) {
+  if (campoActivo.value) {
+    allCows.forEach((cow) => {
+      headAngles[cow.id] = 15
+    })
+    return
+  }
+
   cows.value.forEach((cow, index) => {
     const el = cowEls[index]
     if (!el) return
+
     const rect       = el.getBoundingClientRect()
     const cowCenterX = rect.left + rect.width  / 2
     const cowCenterY = rect.top  + rect.height / 3
-    const dx         = e.clientX - cowCenterX
-    const dy         = e.clientY - cowCenterY
-    const distance   = Math.sqrt(dx * dx + dy * dy)
-    const maxOffset  = 2.5
+
+    const dx       = e.clientX - cowCenterX
+    const dy       = e.clientY - cowCenterY
+    const distance = Math.sqrt(dx * dx + dy * dy)
+    const maxOffset = 2.5
+
     const normalizedX = (dx / Math.max(distance, 1)) * maxOffset
     const normalizedY = (dy / Math.max(distance, 1)) * maxOffset
+
     eyeOffsets[cow.id].x = cow.flip ? -normalizedX : normalizedX
     eyeOffsets[cow.id].y = normalizedY
+
     const effectiveDx  = cow.flip ? -dx : dx
     const angle        = Math.atan2(dy, effectiveDx) * (180 / Math.PI)
     headAngles[cow.id] = Math.max(-18, Math.min(18, angle * 0.25))
@@ -206,15 +279,46 @@ onUnmounted(() => {
   window.removeEventListener('resize', onResize)
 })
 
-// ── Submit ─────────────────────────────────────────────
-async function handleSubmit() {
-  error.value   = ''
+async function handleEnviarCodigo() {
+  error.value = ''
   loading.value = true
   try {
     await forgotPassword(correo.value)
+    paso.value = 2
+  } catch (e) {
+    error.value = e.response?.data?.mensaje || 'No se encontró ninguna cuenta con ese correo.'
+  } finally {
+    loading.value = false
+  }
+}
+
+function volverPaso1() {
+  paso.value = 1
+  codigo.value = ''
+  clave.value = ''
+  clave_confirmation.value = ''
+  error.value = ''
+}
+
+async function handleCambiarContrasena() {
+  error.value = ''
+
+  if (clave.value.length < 8) {
+    error.value = 'La contraseña debe tener al menos 8 caracteres.'
+    return
+  }
+
+  if (clave.value !== clave_confirmation.value) {
+    error.value = 'Las contraseñas no coinciden.'
+    return
+  }
+
+  loading.value = true
+  try {
+    await resetPassword(correo.value, codigo.value, clave.value, clave_confirmation.value)
     success.value = true
   } catch (e) {
-    error.value = e.response?.data?.message || 'No se encontró ninguna cuenta con ese correo.'
+    error.value = e.response?.data?.mensaje || 'El código es inválido o ha expirado.'
   } finally {
     loading.value = false
   }
@@ -239,66 +343,90 @@ async function handleSubmit() {
   );
 }
 
-/* ── Nubes ── */
 .cloud {
   position: absolute;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 50px;
   pointer-events: none;
 }
-.cloud::before, .cloud::after {
+.cloud::before,
+.cloud::after {
   content: '';
   position: absolute;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 50%;
 }
-.cloud-1 { width: 120px; height: 36px; top: 80px; left: 8%; animation: cloud-drift 18s linear infinite; }
+.cloud-1 {
+  width: 120px; height: 36px;
+  top: 80px; left: 8%;
+  animation: cloud-drift 18s linear infinite;
+}
 .cloud-1::before { width: 60px; height: 55px; top: -28px; left: 18px; }
 .cloud-1::after  { width: 45px; height: 42px; top: -20px; left: 52px; }
-.cloud-2 { width: 90px; height: 28px; top: 130px; left: 30%; animation: cloud-drift 24s linear infinite 4s; opacity: 0.75; }
+
+.cloud-2 {
+  width: 90px; height: 28px;
+  top: 130px; left: 30%;
+  animation: cloud-drift 24s linear infinite 4s;
+  opacity: 0.75;
+}
 .cloud-2::before { width: 44px; height: 42px; top: -22px; left: 14px; }
 .cloud-2::after  { width: 34px; height: 32px; top: -16px; left: 40px; }
-.cloud-3 { width: 100px; height: 30px; top: 60px; right: 15%; animation: cloud-drift 20s linear infinite 8s; opacity: 0.8; }
+
+.cloud-3 {
+  width: 100px; height: 30px;
+  top: 60px; right: 15%;
+  animation: cloud-drift 20s linear infinite 8s;
+  opacity: 0.8;
+}
 .cloud-3::before { width: 50px; height: 46px; top: -24px; left: 16px; }
 .cloud-3::after  { width: 38px; height: 36px; top: -18px; left: 48px; }
+
 @keyframes cloud-drift {
   0%   { transform: translateX(0); }
   50%  { transform: translateX(30px); }
   100% { transform: translateX(0); }
 }
 
-/* ── Escena ── */
 .background-scene {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
+
 .sun {
   position: absolute;
-  top: 48px; right: 140px;
-  width: 80px; height: 80px;
+  top: 48px;
+  right: 140px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: radial-gradient(circle, #fff9c4 40%, #ffe566 70%, #ffcc00 100%);
-  box-shadow: 0 0 40px 14px rgba(255,220,50,0.5);
+  box-shadow: 0 0 40px 14px rgba(255, 220, 50, 0.5);
   animation: sun-pulse 4s ease-in-out infinite;
 }
 @keyframes sun-pulse {
-  0%, 100% { box-shadow: 0 0 40px 14px rgba(255,220,50,0.5); }
-  50%       { box-shadow: 0 0 70px 26px rgba(255,220,50,0.7); }
+  0%, 100% { box-shadow: 0 0 40px 14px rgba(255, 220, 50, 0.5); }
+  50%       { box-shadow: 0 0 70px 26px rgba(255, 220, 50, 0.7); }
 }
+
 .cow {
   position: absolute;
   pointer-events: all;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.18));
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
   z-index: 4;
 }
+
 .fence-area {
   position: absolute;
-  bottom: 98px; left: 0; right: 0;
-  height: 58px; z-index: 3;
+  bottom: 98px;
+  left: 0; right: 0;
+  height: 58px;
+  z-index: 3;
   pointer-events: none;
 }
 .fence-svg { width: 100%; height: 100%; }
+
 .ground-flat {
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -307,17 +435,18 @@ async function handleSubmit() {
   z-index: 2;
 }
 
-/* ── Caja ── */
 .login-box {
   position: relative;
   z-index: 10;
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255,255,255,0.35);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   padding: 2.5rem 2.2rem;
   border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.4);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
   width: 100%;
   max-width: 420px;
   margin: 0 1rem;
@@ -333,11 +462,11 @@ h1 {
   font-weight: 700;
   margin-bottom: 0.2rem;
   letter-spacing: -0.5px;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 h2 {
   text-align: center;
-  color: rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 0.95rem;
   font-weight: 400;
   margin-bottom: 0;
@@ -348,34 +477,36 @@ h2 {
 label {
   display: block;
   margin-bottom: 0.35rem;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.3px;
 }
 
-input[type="email"] {
+input[type="email"],
+input[type="password"],
+input[type="text"] {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: rgba(255,255,255,0.25);
-  border: 1px solid rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 10px;
   font-size: 1rem;
   box-sizing: border-box;
   color: #ffffff;
   transition: border-color 0.2s, background 0.2s;
 }
-input::placeholder { color: rgba(255,255,255,0.6); }
+input::placeholder { color: rgba(255, 255, 255, 0.6); }
 input:focus {
   outline: none;
-  border-color: rgba(255,255,255,0.8);
-  background: rgba(255,255,255,0.32);
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.32);
 }
 
 button[type="submit"] {
   width: 100%;
   padding: 0.85rem;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   color: #1b4332;
   border: none;
   border-radius: 10px;
@@ -384,16 +515,17 @@ button[type="submit"] {
   cursor: pointer;
   margin-top: 0.5rem;
   transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.3px;
 }
 button[type="submit"]:hover:not(:disabled) {
   background: #ffffff;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   transform: translateY(-1px);
 }
 button[type="submit"]:disabled {
-  background: rgba(255,255,255,0.4);
-  color: rgba(255,255,255,0.6);
+  background: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
@@ -404,57 +536,29 @@ button[type="submit"]:disabled {
   font-size: 0.85rem;
   text-align: center;
   margin-bottom: 0.3rem;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Éxito */
-.success-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: rgba(255,255,255,0.15);
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  border: 1px solid rgba(255,255,255,0.3);
-}
-.success-wrap svg {
-  width: 36px;
-  height: 36px;
-  stroke: #b7e4c7;
-}
-.success-wrap p {
-  color: rgba(255,255,255,0.95);
-  font-size: 0.9rem;
+.success {
+  color: #ffffff;
+  font-size: 1rem;
   text-align: center;
-  margin: 0;
-  font-family: var(--font-ui);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Link volver */
-.link-container {
-  text-align: center;
-  margin-top: 1rem;
-}
+.link-container { text-align: center; margin-top: 1.2rem; }
 .link-container a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  color: rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 0.85rem;
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s;
-}
-.link-container a svg {
-  width: 14px;
-  height: 14px;
 }
 .link-container a:hover { color: #ffffff; text-decoration: underline; }
 
-/* ── Responsive ── */
-@media (max-width: 750px) { .login-box { margin-bottom: 130px; } }
+@media (max-width: 750px) {
+  .login-box { margin-bottom: 130px; }
+}
 @media (max-width: 550px) {
   .login-box { padding: 2rem 1.4rem; margin-bottom: 120px; }
   h1 { font-size: 1.6rem; }
