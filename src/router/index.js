@@ -9,13 +9,11 @@ import Historial from '../views/Historial.vue'
 import Inicio from '../views/Inicio.vue'
 import Fincas from '../views/Fincas.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
-import ResetPassword from '../views/ResetPassword.vue'
 
 const routes = [
     { path: '/', redirect: '/login' },
     { path: '/login', name: 'Login', component: Login, meta: { guest: true } },
     { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPassword, meta: { guest: true } },
-    { path: '/reset-password', name: 'ResetPassword', component: ResetPassword, meta: { guest: true } },
     {
         path: '/dashboard',
         component: Dashboard,
